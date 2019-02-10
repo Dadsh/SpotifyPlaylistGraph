@@ -1,6 +1,8 @@
 import spotipy
 import sys
 import pprint
+import numpy as np
+import matplotlib.pyplot as plt
 from spotipy.oauth2 import SpotifyClientCredentials
 
 # Log in
@@ -10,7 +12,7 @@ spotify = spotipy.Spotify(client_credentials_manager=client_credentials_manager)
 
 # Get playlist
 user = "dadsh"
-playlist = "spotify:user:dadsh:playlist:5tecqNtnQV175T2pSbyoVe"
+playlist = "spotify:user:dadsh:playlist:1zeoeTuPGQsAao5uBDhaa1"
 results = spotify.user_playlist_tracks(user, playlist, fields="items(track(artists(name),name,popularity,uri))")
 # pprint.pprint(results)
 
@@ -28,9 +30,25 @@ features = spotify.audio_features(uris)
 pl = results['items']
 for i in range(len(pl)):
     pl[i]['track']['features'] = features[i]
-print(type(pl))
-pprint.pprint(pl)
 
-# pprint.pprint(results['items'][3]['track']['name'])
-# pprint.pprint(results['items'][3]['track']['uri'])
-# pprint.pprint(features)
+# Create x and y coordinates
+tempo = []
+energy = []
+name = []
+for i in range(len(pl)):
+    tempo.append(pl[i]['track']['features']['tempo'])
+    energy.append(pl[i]['track']['features']['energy'])
+    name.append(pl[i]['track']['name'])
+print(tempo)
+print(energy)
+print(name)
+
+plt.scatter(tempo, energy)
+for i, txt in enumerate(name):
+    plt.annotate(txt, (tempo[i], energy[i]))
+plt.xlabel("Tempo")
+plt.ylabel("Energy")
+plt.show()
+
+# print(type(pl))
+# pprint.pprint(pl)
